@@ -7,11 +7,15 @@ public class Walk : MonoBehaviour
     [SerializeField] float speed = 5.0f;
     [SerializeField] float turnSpeed = 5.0f;
     private CharacterController controller;
+    private AudioSource audioSource;
+    private float idleTime = 0.0f;
+    private float sittingTime = 0.0f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         animator = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -22,20 +26,41 @@ public class Walk : MonoBehaviour
         controller.Move(new Vector3(0, -gravity, 0) * Time.deltaTime);
         float vertical = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
-        transform.Rotate(new Vector3(0, horizontal, 0) * Time.deltaTime * turnSpeed);
+        transform.Rotate(new Vector3(0, horizontal * vertical, 0) * Time.deltaTime * turnSpeed);
         if(vertical != 0)
         {
+            idleTime = 0;
+            sittingTime = 0;
+            animator.SetBool("sitting", false);
+            animator.SetBool("sit", false);
+            animator.SetBool("meow", false);
             animator.SetBool("idle", false);
             animator.SetBool("walk", true);
             Vector3 move = transform.forward * speed * Time.deltaTime * vertical;
             controller.Move(move);
-            
-            
+               
         }
         else
         {
+            idleTime += Time.deltaTime;
             animator.SetBool("walk", false);
             animator.SetBool("idle", true);
+            if(idleTime > 5.0f)
+            {
+                sittingTime += Time.deltaTime;
+                animator.SetBool("idle", false);
+                animator.SetBool("sit", true);
+                if(sittingTime > 2.0f)
+                {
+                    animator.SetBool("sit", false);
+                    animator.SetBool("sitting", true);
+                }
+            }
+        }
+        if(Input.GetButtonDown("Submit"))
+        {
+            audioSource.Play();
+            
         }
     }
 }
