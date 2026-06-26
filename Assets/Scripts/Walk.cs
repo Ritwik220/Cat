@@ -6,10 +6,12 @@ public class Walk : MonoBehaviour
     private Animator animator;
     [SerializeField] float speed = 5.0f;
     [SerializeField] float turnSpeed = 5.0f;
+    [SerializeField] Transform desiredOrientation;
     private CharacterController controller;
     private AudioSource audioSource;
     private float idleTime = 0.0f;
     private float sittingTime = 0.0f;
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -36,6 +38,11 @@ public class Walk : MonoBehaviour
             animator.SetBool("meow", false);
             animator.SetBool("idle", false);
             animator.SetBool("walk", true);
+            if(transform.eulerAngles != desiredOrientation.eulerAngles){
+                Quaternion orientaion = transform.rotation;
+                orientaion.y = desiredOrientation.rotation.y;
+                transform.rotation = orientaion;
+            }
             Vector3 move = transform.forward * speed * Time.deltaTime * vertical;
             controller.Move(move);
                
