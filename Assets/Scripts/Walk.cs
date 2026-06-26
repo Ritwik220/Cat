@@ -39,9 +39,16 @@ public class Walk : MonoBehaviour
             animator.SetBool("idle", false);
             animator.SetBool("walk", true);
             if(transform.eulerAngles != desiredOrientation.eulerAngles){
-                Quaternion orientaion = transform.rotation;
-                orientaion.y = desiredOrientation.rotation.y;
-                transform.rotation = orientaion;
+                Quaternion targetRotation =
+                Quaternion.Euler(
+                    0,
+                    desiredOrientation.eulerAngles.y,
+                    0);
+
+                transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                turnSpeed * Time.deltaTime);
             }
             Vector3 move = transform.forward * speed * Time.deltaTime * vertical;
             controller.Move(move);
