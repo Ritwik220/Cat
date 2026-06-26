@@ -20,6 +20,7 @@ public class Camera : MonoBehaviour
         float x_movement = Input.GetAxis("Mouse X");
         float y_movement = Input.GetAxis("Mouse Y");
         transform.Rotate(new Vector3(y_movement, x_movement, 0)*Time.deltaTime*turnSpeed);
+        
     }
     void LateUpdate()
     {
