@@ -4,7 +4,8 @@ using UnityEngine;
 public class Walk : MonoBehaviour
 {
     private Animator animator;
-    [SerializeField] float speed = 5.0f;
+    [SerializeField] float normalSpeed = 3.0f;
+    [SerializeField] float sprintSpeed = 8.0f;
     [SerializeField] float turnSpeed = 5.0f;
     [SerializeField] Transform desiredOrientation;
     private CharacterController controller;
@@ -31,13 +32,23 @@ public class Walk : MonoBehaviour
         transform.Rotate(new Vector3(0, horizontal * vertical, 0) * Time.deltaTime * turnSpeed);
         if(vertical != 0)
         {
+            float speed = normalSpeed;
             idleTime = 0;
             sittingTime = 0;
             animator.SetBool("sitting", false);
             animator.SetBool("sit", false);
             animator.SetBool("meow", false);
             animator.SetBool("idle", false);
-            animator.SetBool("walk", true);
+            if(Input.GetAxis("run") != 0)
+            {
+                animator.SetBool("walk", false);
+                animator.SetBool("run", true);
+                speed = sprintSpeed;
+            }
+            else {
+                animator.SetBool("run", false);
+                animator.SetBool("walk", true);
+            }
             if(transform.eulerAngles != desiredOrientation.eulerAngles){
                 Quaternion targetRotation =
                 Quaternion.Euler(
@@ -57,6 +68,7 @@ public class Walk : MonoBehaviour
         else
         {
             idleTime += Time.deltaTime;
+            animator.SetBool("run", false);
             animator.SetBool("walk", false);
             animator.SetBool("idle", true);
             if(idleTime > 5.0f)
